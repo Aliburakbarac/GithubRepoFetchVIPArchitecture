@@ -19,8 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         window = UIWindow(windowScene: windowScene)
-        let viewController = GitHubViewController()
-        GitHubConfigurator.configureModule(for: viewController)
+        let viewController = GitHubConfigurator.configureModule()
         
         let navigationController = UINavigationController(rootViewController: viewController)
         window?.rootViewController = navigationController

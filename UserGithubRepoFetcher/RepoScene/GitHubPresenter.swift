@@ -16,11 +16,15 @@ final class GitHubPresenter: GitHubPresenterProtocol {
     weak var viewController: GitHubViewProtocol?
 
     func presentFetchedRepos(repos: [GitHubRepo]) {
-        viewController?.displayRepos(repos: repos)
+        DispatchQueue.main.async {
+            self.viewController?.displayRepos(repos: repos)
+        }
     }
 
     func presentFetchError(error: String) {
-        viewController?.displayError(error: error)
+        DispatchQueue.main.async {
+            self.viewController?.displayError(error: error)
+        }
     }
 }
 

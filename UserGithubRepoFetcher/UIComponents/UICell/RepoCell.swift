@@ -24,6 +24,9 @@ class RepoCell: UITableViewCell {
         return label
     }()
     
+    
+    // MARK: - Initializers
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
@@ -33,11 +36,16 @@ class RepoCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+    // MARK: - UITableViewCell Lifecycle
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         repoNameLabel.text = nil
         repoUrlLabel.text = nil
     }
+    
+    // MARK: - Setup
     
     private func setupViews() {
         contentView.addSubview(repoNameLabel)
@@ -54,6 +62,8 @@ class RepoCell: UITableViewCell {
             repoUrlLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
         ])
     }
+    
+    // MARK: - Configuration
     
     func configure(with repo: GitHubRepo) {
         repoNameLabel.text = repo.name

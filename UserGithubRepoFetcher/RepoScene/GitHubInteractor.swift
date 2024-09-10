@@ -12,11 +12,12 @@ protocol GitHubInteractorProtocol {
 }
 
 final class GitHubInteractor: GitHubInteractorProtocol {
-    var presenter: GitHubPresenterProtocol?
     private let worker: GitHubWorker
+    var presenter: GitHubPresenterProtocol?
 
-    init(worker: GitHubWorker) {
+    init(worker: GitHubWorker, presenter: GitHubPresenterProtocol) {
         self.worker = worker
+        self.presenter = presenter
     }
 
     func fetchPublicRepos(username: String) {
@@ -30,4 +31,5 @@ final class GitHubInteractor: GitHubInteractorProtocol {
         }
     }
 }
+
 

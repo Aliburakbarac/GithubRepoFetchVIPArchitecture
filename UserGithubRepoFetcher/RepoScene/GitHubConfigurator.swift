@@ -6,20 +6,21 @@
 //
 
 import Foundation
+import UIKit
 
 final class GitHubConfigurator {
     
-    static func configureModule(for viewController: GitHubViewController) {
-        let dataStore = GitHubDataStore()
-        let worker = GitHubWorker(dataStore: dataStore)
-        let interactor = GitHubInteractor(worker: worker)
+    static func configureModule() -> UIViewController {
         let presenter = GitHubPresenter()
+        let service = GitHubService()
+        let worker = GitHubWorker(service: service)
+        let interactor = GitHubInteractor(worker: worker, presenter: presenter)
         let router = GitHubRouter()
-        
-        viewController.interactor = interactor
-        interactor.presenter = presenter
-        presenter.viewController = viewController
-        router.viewController = viewController
+        let controller = GitHubViewController(interactor: interactor, router: router)
+            
+        presenter.viewController = controller
+            
+        return controller
     }
 }
 
