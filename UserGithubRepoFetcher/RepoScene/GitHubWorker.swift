@@ -15,7 +15,8 @@ final class GitHubWorker {
     }
 
     func fetchRepos(for username: String) async throws -> [GitHubRepo] {
-        let repos = try await service.fetchRepos(for: username)
+        let request = GitHubRepoRequest(username: username)
+        let repos = try await service.fetchRepos(for: request)
         return repos
     }
 }

@@ -21,15 +21,17 @@ final class GitHubInteractor: GitHubInteractorProtocol {
     }
 
     func fetchPublicRepos(username: String) {
-        Task {
-            do {
-                let repos = try await worker.fetchRepos(for: username)
-                presenter?.presentFetchedRepos(repos: repos)
-            } catch {
-                presenter?.presentFetchError(error: error.localizedDescription)
+            Task {
+                do {
+                    let repos = try await self.worker.fetchRepos(for: username)
+                    presenter?.presentFetchedRepos(repos: repos)
+                } catch let error as GitHubRouterError {
+                    presenter?.presentFetchError(error: error)
+                } catch {
+                    presenter?.presentFetchError(error: .invalidURL)
+                }
             }
         }
-    }
 }
 
 

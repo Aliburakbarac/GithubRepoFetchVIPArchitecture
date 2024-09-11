@@ -8,18 +8,21 @@
 import Foundation
 
 protocol GitHubServiceProtocol {
-    func fetchRepos(for username: String) async throws -> [GitHubRepo]
+    func fetchRepos(for request: GitHubRepoRequest) async throws -> [GitHubRepo]
 }
 
 final class GitHubService: GitHubServiceProtocol {
-    func fetchRepos(for username: String) async throws -> [GitHubRepo] {
-        let urlString = "https://api.github.com/users/\(username)/repos"
-        guard let url = URL(string: urlString) else {
-            throw URLError(.badURL)
+    func fetchRepos(for request: GitHubRepoRequest) async throws -> [GitHubRepo] {
+        guard let url = request.url else {
+            throw GitHubRouterError.invalidURL
         }
-
-        let (data , _) = try await URLSession.shared.data(from: url)
-        let repos = try JSONDecoder().decode([GitHubRepo].self, from: data)
-        return repos
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+            throw GitHubRouterError.unableToOpenURL
+        }
+        
+        let repoResponses = try JSONDecoder().decode([GitHubRepoResponse].self, from: data)
+        return repoResponses.map { GitHubRepo(name: $0.name, htmlURL: $0.htmlURL) }
     }
 }

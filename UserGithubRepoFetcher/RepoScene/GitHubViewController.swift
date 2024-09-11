@@ -10,7 +10,7 @@ import SafariServices
 
 protocol GitHubViewProtocol: AnyObject {
     func displayRepos(repos: [GitHubRepo])
-    func displayError(error: String)
+    func displayError(errorTitle: String, errorMessage: String)
 }
 
 final class GitHubViewController: UIViewController, GitHubViewProtocol {
@@ -63,12 +63,9 @@ final class GitHubViewController: UIViewController, GitHubViewProtocol {
         self.repos = repos
         tableView.reloadData()
     }
-
-    func displayError(error: String) {
-        let alert = UIAlertController(title: "Error", message: error, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
+    func displayError(errorTitle: String, errorMessage: String) {
+            router.presentError(errorTitle: errorTitle, errorMessage: errorMessage)
+        }
 }
 
 // MARK: - UITableViewDataSource, UITableViewDelegate
@@ -78,25 +75,21 @@ extension GitHubViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        //Safe indexing fakat extension yazılıp kısaltılabilir.
-        
-        guard indexPath.row < repos.count else {
-            return UITableViewCell()
+            guard let repo = repos[safeIndex: indexPath.row] else {
+                return UITableViewCell()
+            }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: RepoCell.reuseIdentifier, for: indexPath) as? RepoCell else {
+                return UITableViewCell()
+            }
+            cell.configure(with: repo)
+            return cell
         }
-        let cell = tableView.dequeueReusableCell(withIdentifier: RepoCell.reuseIdentifier, for: indexPath) as! RepoCell
-        cell.configure(with: repos[indexPath.row])
-        return cell
-    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        //Safe indexing fakat extension yazılıp kısaltılabilir.
-
-        guard indexPath.row < repos.count, let url = URL(string: repos[indexPath.row].htmlURL) else {
-            return
+        guard let repo = repos[safeIndex: indexPath.row], let url = URL(string: repo.htmlURL) else {
+                return
+            }
+            let safariVC = SFSafariViewController(url: url)
+            present(safariVC, animated: true)
         }
-        let safariVC = SFSafariViewController(url: url)
-        present(safariVC, animated: true)
-    }
 }
