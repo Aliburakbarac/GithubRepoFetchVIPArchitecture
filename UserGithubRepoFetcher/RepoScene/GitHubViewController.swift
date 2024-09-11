@@ -9,7 +9,7 @@ import UIKit
 import SafariServices
 
 protocol GitHubViewProtocol: AnyObject {
-    func displayRepos(repos: [GitHubRepo])
+    func displayRepos(_ viewModels: [GitHubRepoViewModels.Repos])
     func displayError(errorTitle: String, errorMessage: String)
 }
 
@@ -17,7 +17,7 @@ final class GitHubViewController: UIViewController, GitHubViewProtocol {
     
     private let interactor: GitHubInteractorProtocol
     private let router: GitHubRouter
-    private var repos: [GitHubRepo] = []
+    private var repos: [GitHubRepoViewModels.Repos] = []
     
     // MARK: - Initializers
     init(interactor: GitHubInteractorProtocol, router: GitHubRouter) {
@@ -56,16 +56,17 @@ final class GitHubViewController: UIViewController, GitHubViewProtocol {
     }
     
     private func fetchRepos() {
-        interactor.fetchPublicRepos(username: "aliburakbarac")
+        interactor.fetchPublicRepos(request: GitHubRepoViewModels.Request(username: "aliburakbarac"))
     }
 
-    func displayRepos(repos: [GitHubRepo]) {
-        self.repos = repos
+    func displayRepos(_ viewModels: [GitHubRepoViewModels.Repos]) {
+        self.repos = viewModels
         tableView.reloadData()
     }
+
     func displayError(errorTitle: String, errorMessage: String) {
-            router.presentError(errorTitle: errorTitle, errorMessage: errorMessage)
-        }
+        router.presentError(errorTitle: errorTitle, errorMessage: errorMessage)
+    }
 }
 
 // MARK: - UITableViewDataSource, UITableViewDelegate
@@ -75,21 +76,21 @@ extension GitHubViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            guard let repo = repos[safeIndex: indexPath.row] else {
-                return UITableViewCell()
-            }
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: RepoCell.reuseIdentifier, for: indexPath) as? RepoCell else {
-                return UITableViewCell()
-            }
-            cell.configure(with: repo)
-            return cell
+        guard let repo = repos[safeIndex: indexPath.row] else {
+            return UITableViewCell()
         }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: RepoCell.reuseIdentifier, for: indexPath) as? RepoCell else {
+            return UITableViewCell()
+        }
+        cell.configure(with: repo)
+        return cell
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let repo = repos[safeIndex: indexPath.row], let url = URL(string: repo.htmlURL) else {
-                return
-            }
-            let safariVC = SFSafariViewController(url: url)
-            present(safariVC, animated: true)
+            return
         }
+        let safariVC = SFSafariViewController(url: url)
+        present(safariVC, animated: true)
+    }
 }

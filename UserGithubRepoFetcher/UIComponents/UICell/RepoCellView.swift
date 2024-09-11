@@ -54,7 +54,7 @@ class RepoCellView: UIView {
     
     // MARK: - Configuration
     
-    func configure(with repo: GitHubRepo) {
+    func configure(with repo: GitHubRepoViewModels.Repos) {
         repoNameLabel.text = repo.name
         repoUrlLabel.text = repo.htmlURL
     }

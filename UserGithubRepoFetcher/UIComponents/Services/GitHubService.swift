@@ -8,11 +8,11 @@
 import Foundation
 
 protocol GitHubServiceProtocol {
-    func fetchRepos(for request: GitHubRepoRequest) async throws -> [GitHubRepo]
+    func fetchRepos(for request: GitHubRepoViewModels.Request) async throws -> [GitHubRepoViewModels.Repos]
 }
 
 final class GitHubService: GitHubServiceProtocol {
-    func fetchRepos(for request: GitHubRepoRequest) async throws -> [GitHubRepo] {
+    func fetchRepos(for request: GitHubRepoViewModels.Request) async throws -> [GitHubRepoViewModels.Repos] {
         guard let url = request.url else {
             throw GitHubRouterError.invalidURL
         }
@@ -22,7 +22,7 @@ final class GitHubService: GitHubServiceProtocol {
             throw GitHubRouterError.unableToOpenURL
         }
         
-        let repoResponses = try JSONDecoder().decode([GitHubRepoResponse].self, from: data)
-        return repoResponses.map { GitHubRepo(name: $0.name, htmlURL: $0.htmlURL) }
+        let repoResponses = try JSONDecoder().decode([GitHubRepoViewModels.Response.Repo].self, from: data)
+        return repoResponses.map { GitHubRepoViewModels.Repos(name: $0.name, htmlURL: $0.htmlURL) }
     }
 }

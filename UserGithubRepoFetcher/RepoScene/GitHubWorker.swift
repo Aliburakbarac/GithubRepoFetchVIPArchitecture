@@ -14,10 +14,9 @@ final class GitHubWorker {
         self.service = service
     }
 
-    func fetchRepos(for username: String) async throws -> [GitHubRepo] {
-        let request = GitHubRepoRequest(username: username)
+    func fetchRepos(for username: String) async throws -> GitHubRepoViewModels.Response {
+        let request = GitHubRepoViewModels.Request(username: username)
         let repos = try await service.fetchRepos(for: request)
-        return repos
+        return GitHubRepoViewModels.Response(repos: repos.map { GitHubRepoViewModels.Response.Repo(id: 0, name: $0.name, fullName: "", description: nil, htmlURL: $0.htmlURL) })
     }
 }
-

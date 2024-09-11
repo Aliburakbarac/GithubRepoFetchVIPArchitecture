@@ -27,11 +27,6 @@ class RepoCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        repoCellView.configure(with: GitHubRepo(name: "", htmlURL: ""))
-    }
-    
     // MARK: - Setup
     
     private func layout() {
@@ -47,7 +42,7 @@ class RepoCell: UITableViewCell {
     
     // MARK: - Configuration
     
-    func configure(with repo: GitHubRepo) {
+    func configure(with repo: GitHubRepoViewModels.Repos) {
         repoCellView.configure(with: repo)
     }
 }

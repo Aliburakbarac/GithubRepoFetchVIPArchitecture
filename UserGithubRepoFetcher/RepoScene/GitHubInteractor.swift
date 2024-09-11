@@ -8,7 +8,7 @@
 import Foundation
 
 protocol GitHubInteractorProtocol {
-    func fetchPublicRepos(username: String)
+    func fetchPublicRepos(request: GitHubRepoViewModels.Request)
 }
 
 final class GitHubInteractor: GitHubInteractorProtocol {
@@ -20,18 +20,20 @@ final class GitHubInteractor: GitHubInteractorProtocol {
         self.presenter = presenter
     }
 
-    func fetchPublicRepos(username: String) {
-            Task {
-                do {
-                    let repos = try await self.worker.fetchRepos(for: username)
-                    presenter?.presentFetchedRepos(repos: repos)
-                } catch let error as GitHubRouterError {
-                    presenter?.presentFetchError(error: error)
-                } catch {
+    func fetchPublicRepos(request: GitHubRepoViewModels.Request) {
+        Task {
+            do {
+                let response = try await self.worker.fetchRepos(for: request.username)
+                presenter?.presentFetchedRepos(response: response)
+            } catch {
+                switch error {
+                case let gitHubError as GitHubRouterError:
+                    presenter?.presentFetchError(error: gitHubError)
+                default:
                     presenter?.presentFetchError(error: .invalidURL)
                 }
             }
         }
+    }
 }
-
 
